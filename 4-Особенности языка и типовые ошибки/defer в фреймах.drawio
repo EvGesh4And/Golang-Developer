@@ -1,93 +1,115 @@
 <mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/26.0.9 Chrome/128.0.6613.186 Electron/32.2.5 Safari/537.36" version="26.0.9">
   <diagram name="Страница — 1" id="EKbT9H11xAKmvvaZQ-oD">
-    <mxGraphModel dx="1098" dy="820" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="830" dy="482" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="ARzyhmSnk9Yb6O2nCcPT-1" value="func main ()" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="ARzyhmSnk9Yb6O2nCcPT-1" value="func main () {&lt;div&gt;calc()&lt;/div&gt;&lt;div&gt;}&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="230" y="230" width="120" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="ARzyhmSnk9Yb6O2nCcPT-2" value="Конец" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="ARzyhmSnk9Yb6O2nCcPT-2" value="Конец" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="180" y="230" width="40" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="ARzyhmSnk9Yb6O2nCcPT-3" value="" style="endArrow=classic;html=1;rounded=0;entryX=1;entryY=1;entryDx=0;entryDy=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" edge="1" parent="1" source="ARzyhmSnk9Yb6O2nCcPT-4" target="ARzyhmSnk9Yb6O2nCcPT-7">
+        <mxCell id="ARzyhmSnk9Yb6O2nCcPT-3" value="" style="endArrow=classic;html=1;rounded=0;entryX=1;entryY=1;entryDx=0;entryDy=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" parent="1" source="ARzyhmSnk9Yb6O2nCcPT-4" target="ARzyhmSnk9Yb6O2nCcPT-7" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="440" y="360" as="sourcePoint" />
             <mxPoint x="389.70000000000005" y="308.98" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="ARzyhmSnk9Yb6O2nCcPT-4" value="&lt;b&gt;return&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+        <mxCell id="ARzyhmSnk9Yb6O2nCcPT-4" value="&lt;b&gt;return&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
           <mxGeometry x="450" y="320" width="50" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="ARzyhmSnk9Yb6O2nCcPT-5" value="&lt;span style=&quot;forced-color-adjust: none; color: rgb(0, 0, 0); font-family: Helvetica; font-size: 12px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(251, 251, 251); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;&quot;&gt;Так как возврат &lt;/span&gt;&lt;span style=&quot;forced-color-adjust: none; color: rgb(0, 0, 0); font-family: Helvetica; font-size: 12px; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(251, 251, 251); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;&quot;&gt;&lt;b style=&quot;&quot;&gt;&lt;u style=&quot;&quot;&gt;именованный&lt;/u&gt;&lt;/b&gt;&lt;/span&gt;&lt;span style=&quot;forced-color-adjust: none; color: rgb(0, 0, 0); font-family: Helvetica; font-size: 12px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(251, 251, 251); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;&quot;&gt;, то ничего не происходит -- оператору нечего вычислять.&lt;/span&gt;" style="text;whiteSpace=wrap;html=1;align=center;" vertex="1" parent="1">
+        <mxCell id="ARzyhmSnk9Yb6O2nCcPT-5" value="&lt;span style=&quot;forced-color-adjust: none; color: rgb(0, 0, 0); font-family: Helvetica; font-size: 12px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(251, 251, 251); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;&quot;&gt;Так как возврат &lt;/span&gt;&lt;span style=&quot;forced-color-adjust: none; color: rgb(0, 0, 0); font-family: Helvetica; font-size: 12px; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(251, 251, 251); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;&quot;&gt;&lt;b style=&quot;&quot;&gt;&lt;u style=&quot;&quot;&gt;именованный&lt;/u&gt;&lt;/b&gt;&lt;/span&gt;&lt;span style=&quot;forced-color-adjust: none; color: rgb(0, 0, 0); font-family: Helvetica; font-size: 12px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(251, 251, 251); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;&quot;&gt;, то ничего не происходит -- оператору нечего вычислять.&lt;/span&gt;" style="text;whiteSpace=wrap;html=1;align=center;" parent="1" vertex="1">
           <mxGeometry x="370" y="340" width="230" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="ARzyhmSnk9Yb6O2nCcPT-6" value="func calc() (res int) {&lt;div&gt;res := 2&lt;/div&gt;&lt;div&gt;defer func () {&lt;div&gt;res = 3&amp;nbsp;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;}&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;return&amp;nbsp;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;}&lt;/span&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="ARzyhmSnk9Yb6O2nCcPT-6" value="func calc() (res int) {&lt;div&gt;res := 2&lt;/div&gt;&lt;div&gt;defer func () {&lt;div&gt;res = 3&amp;nbsp;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;}&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;return&amp;nbsp;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;}()&lt;/span&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="450" y="230" width="200" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="ARzyhmSnk9Yb6O2nCcPT-7" value="defer&lt;br&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;res = 3&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="ARzyhmSnk9Yb6O2nCcPT-7" value="defer&lt;br&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;res = 3&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="354" y="230" width="96" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="ARzyhmSnk9Yb6O2nCcPT-8" value="" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="ARzyhmSnk9Yb6O2nCcPT-9" target="ARzyhmSnk9Yb6O2nCcPT-7">
+        <mxCell id="ARzyhmSnk9Yb6O2nCcPT-8" value="" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" parent="1" source="ARzyhmSnk9Yb6O2nCcPT-9" target="ARzyhmSnk9Yb6O2nCcPT-7" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="360" y="200" as="sourcePoint" />
             <mxPoint x="354" y="250" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="ARzyhmSnk9Yb6O2nCcPT-9" value="&lt;b&gt;Завершение calc(), передача копий именованных переменных&lt;/b&gt;&lt;div&gt;&lt;b&gt;Вернет &lt;font style=&quot;color: rgb(255, 20, 20);&quot;&gt;3&lt;/font&gt;&lt;/b&gt;&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+        <mxCell id="ARzyhmSnk9Yb6O2nCcPT-9" value="&lt;b&gt;Завершение calc(), передача копий именованных переменных&lt;/b&gt;&lt;div&gt;&lt;b&gt;Вернет &lt;font style=&quot;color: rgb(255, 20, 20);&quot;&gt;3&lt;/font&gt;&lt;/b&gt;&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
           <mxGeometry x="270" y="140" width="190" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="ARzyhmSnk9Yb6O2nCcPT-10" value="func main ()" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="ARzyhmSnk9Yb6O2nCcPT-10" value="func main () {&lt;div&gt;calc()&lt;/div&gt;&lt;div&gt;}&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="230" y="530" width="120" height="90" as="geometry" />
         </mxCell>
-        <mxCell id="ARzyhmSnk9Yb6O2nCcPT-11" value="Конец" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="ARzyhmSnk9Yb6O2nCcPT-11" value="Конец" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="180" y="530" width="40" height="90" as="geometry" />
         </mxCell>
-        <mxCell id="ARzyhmSnk9Yb6O2nCcPT-12" value="" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=1;entryDx=0;entryDy=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" edge="1" parent="1" source="ARzyhmSnk9Yb6O2nCcPT-13" target="ARzyhmSnk9Yb6O2nCcPT-15">
+        <mxCell id="ARzyhmSnk9Yb6O2nCcPT-12" value="" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=1;entryDx=0;entryDy=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" parent="1" source="ARzyhmSnk9Yb6O2nCcPT-13" target="ARzyhmSnk9Yb6O2nCcPT-15" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="440" y="640" as="sourcePoint" />
             <mxPoint x="389.70000000000005" y="588.98" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="ARzyhmSnk9Yb6O2nCcPT-13" value="&lt;b&gt;return res&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+        <mxCell id="ARzyhmSnk9Yb6O2nCcPT-13" value="&lt;b&gt;return res&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
           <mxGeometry x="455" y="640" width="60" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="ARzyhmSnk9Yb6O2nCcPT-14" value="&lt;span style=&quot;forced-color-adjust: none; color: rgb(0, 0, 0); font-family: Helvetica; font-size: 12px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(251, 251, 251); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;&quot;&gt;Так как возврат &lt;b&gt;&lt;u&gt;неименованный&lt;/u&gt;&lt;/b&gt;, то оператор вычисляет значение &lt;b&gt;res &lt;/b&gt;и будет его возвращать ф-ии &lt;b&gt;main&lt;/b&gt;.&lt;/span&gt;" style="text;whiteSpace=wrap;html=1;align=center;" vertex="1" parent="1">
+        <mxCell id="ARzyhmSnk9Yb6O2nCcPT-14" value="&lt;span style=&quot;forced-color-adjust: none; color: rgb(0, 0, 0); font-family: Helvetica; font-size: 12px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(251, 251, 251); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;&quot;&gt;Так как возврат &lt;b&gt;&lt;u&gt;неименованный&lt;/u&gt;&lt;/b&gt;, то оператор вычисляет значение &lt;b&gt;res &lt;/b&gt;и будет его возвращать ф-ии &lt;b&gt;main&lt;/b&gt;.&lt;/span&gt;" style="text;whiteSpace=wrap;html=1;align=center;" parent="1" vertex="1">
           <mxGeometry x="380" y="670" width="230" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="ARzyhmSnk9Yb6O2nCcPT-15" value="func calc() (int) {&lt;div&gt;res := 2&lt;/div&gt;&lt;div&gt;defer func () {&lt;div&gt;res = 3&amp;nbsp;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;}&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;return res&amp;nbsp;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;}&lt;/span&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="ARzyhmSnk9Yb6O2nCcPT-15" value="func calc() (int) {&lt;div&gt;res := 2&lt;/div&gt;&lt;div&gt;defer func () {&lt;div&gt;res = 3&amp;nbsp;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;}&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;return res&amp;nbsp;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;}()&lt;/span&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="450" y="530" width="200" height="90" as="geometry" />
         </mxCell>
-        <mxCell id="ARzyhmSnk9Yb6O2nCcPT-16" value="defer&lt;br&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;res = 3&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="ARzyhmSnk9Yb6O2nCcPT-16" value="defer&lt;br&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;res = 3&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="354" y="530" width="96" height="90" as="geometry" />
         </mxCell>
-        <mxCell id="ARzyhmSnk9Yb6O2nCcPT-17" value="" style="endArrow=classic;html=1;rounded=0;entryX=1;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="ARzyhmSnk9Yb6O2nCcPT-18">
+        <mxCell id="ARzyhmSnk9Yb6O2nCcPT-17" value="" style="endArrow=classic;html=1;rounded=0;entryX=1;entryY=1;entryDx=0;entryDy=0;" parent="1" source="ARzyhmSnk9Yb6O2nCcPT-18" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="360" y="480" as="sourcePoint" />
             <mxPoint x="354" y="530" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="ARzyhmSnk9Yb6O2nCcPT-18" value="&lt;b&gt;Завершение calc(), передача значений, вычисленных оператором return&lt;/b&gt;&lt;div&gt;&lt;b&gt;Вернет &lt;font style=&quot;color: rgb(255, 10, 10);&quot;&gt;2&lt;/font&gt;&lt;/b&gt;&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+        <mxCell id="ARzyhmSnk9Yb6O2nCcPT-18" value="&lt;b&gt;Завершение calc(), передача значений, вычисленных оператором return&lt;/b&gt;&lt;div&gt;&lt;b&gt;Вернет &lt;font style=&quot;color: rgb(255, 10, 10);&quot;&gt;2&lt;/font&gt;&lt;/b&gt;&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
           <mxGeometry x="270" y="420" width="190" height="70" as="geometry" />
         </mxCell>
-        <mxCell id="ARzyhmSnk9Yb6O2nCcPT-19" value="" style="endArrow=none;dashed=1;html=1;rounded=0;" edge="1" parent="1">
+        <mxCell id="ARzyhmSnk9Yb6O2nCcPT-19" value="" style="endArrow=none;dashed=1;html=1;rounded=0;" parent="1" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="360" y="520" as="sourcePoint" />
             <mxPoint x="650" y="520" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="ARzyhmSnk9Yb6O2nCcPT-20" value="&lt;b&gt;Фрейм calc&lt;/b&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="ARzyhmSnk9Yb6O2nCcPT-19">
+        <mxCell id="ARzyhmSnk9Yb6O2nCcPT-20" value="&lt;b&gt;Фрейм calc&lt;/b&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="ARzyhmSnk9Yb6O2nCcPT-19" vertex="1" connectable="0">
           <mxGeometry x="-0.1156" y="1" relative="1" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="ARzyhmSnk9Yb6O2nCcPT-21" value="" style="endArrow=none;dashed=1;html=1;rounded=0;" edge="1" parent="1">
+        <mxCell id="ARzyhmSnk9Yb6O2nCcPT-21" value="" style="endArrow=none;dashed=1;html=1;rounded=0;" parent="1" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="230" y="520" as="sourcePoint" />
             <mxPoint x="350" y="520" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="ARzyhmSnk9Yb6O2nCcPT-22" value="&lt;b&gt;Фрейм main&lt;/b&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="ARzyhmSnk9Yb6O2nCcPT-21">
+        <mxCell id="ARzyhmSnk9Yb6O2nCcPT-22" value="&lt;b&gt;Фрейм main&lt;/b&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="ARzyhmSnk9Yb6O2nCcPT-21" vertex="1" connectable="0">
+          <mxGeometry x="-0.1156" y="1" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="OGVxjYpcanC9l8Psu63y-5" value="" style="endArrow=none;dashed=1;html=1;rounded=0;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="360" y="220" as="sourcePoint" />
+            <mxPoint x="650" y="220" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="OGVxjYpcanC9l8Psu63y-6" value="&lt;b&gt;Фрейм calc&lt;/b&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="OGVxjYpcanC9l8Psu63y-5">
+          <mxGeometry x="-0.1156" y="1" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="OGVxjYpcanC9l8Psu63y-7" value="" style="endArrow=none;dashed=1;html=1;rounded=0;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="230" y="220" as="sourcePoint" />
+            <mxPoint x="350" y="220" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="OGVxjYpcanC9l8Psu63y-8" value="&lt;b&gt;Фрейм main&lt;/b&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="OGVxjYpcanC9l8Psu63y-7">
           <mxGeometry x="-0.1156" y="1" relative="1" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
