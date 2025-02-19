@@ -312,3 +312,382 @@ s := make([]int, 3, 10) // s == {0, 0, 0}
 
 [Хороший источник про slice](https://go.dev/blog/slices-intro)
 
+### Добавление элементов
+
+![add](images/add.png)
+
+![add2](images/add2.png)
+
+![add3](images/add3.png)
+
+#### **Авто-увеличение слайса**
+
+![add4](images/add4.png)
+
+Если `len < cap` — увеличивается `len`
+
+Если `len == cap` — увеличивается `cap`, выделяется новый кусок памяти (данные копируются).
+
+```go
+func main() {
+    s := []int{1}
+    for i := 0; i < 10; i++ {
+        fmt.Printf("ptr %0x len: %d \tcap %d \t\n",
+        &s[0], len(s), cap(s))
+        s = append(s, i)
+    }
+}
+```
+
+### Получение под-слайса (нарезка)
+
+`s[i:j]` — возвращает под-слайс, с `i`-ого элемента включительно, по `j`-ы не влючительно.
+
+Длинна нового сласа будет `j-i`.
+
+```go
+s := []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
+s2 := s[3:5] // [3, 4]
+s2 := s[3:] // [3, 4, 5, 6, 7, 8, 9]
+s2 := s[:5] // [0, 1, 2, 3, 4]
+s2 := s[:] // копия s (shallow)
+```
+
+```go
+s := []byte{1, 2, 3, 4, 5}
+s2 := s[2:5]
+```
+
+![slice5](images/slice5.png)
+
+![slice3](images/slice3.png)
+
+### Неочевидные следствия
+
+```go
+arr := []int{1, 2}
+arr2 := arr // копируется только заголовок, массив остался общий
+arr2[0] = 42
+fmt.Println(arr[0]) // [42, 2]
+arr2 = append(arr2, 3, 4, 5, 6, 7, 8) // реаллокация
+arr2[0] = 1
+fmt.Println(arr[0]) // [1, 2, 3, 4, 5, 6, 7, 8]
+```
+
+![arr2](images/arr2.png)
+
+![arr2-2](images/arr2-2.png)
+
+![arr2-3](images/arr2-3.png)
+
+![arr2-4](images/arr2-4.png)
+
+### Правила работы со слайсами
+
+Функции, изменяющие слайс
+
+- принимают shalow копии
+- возвращают новый слайс
+
+```go
+func AppendUniq(slice []int, slice2 []int) []int {
+ ...
+}
+s = AppendUniq(s, s2)
+```
+
+Копирование слайса
+
+```go
+s := []int{1,2,3}
+s2 := make([]int, len(s))
+copy(s2, s)
+```
+
+### Сортировка
+
+```go
+s := []int{3, 2, 1}
+sort.Ints(s) 
+```
+
+```go
+s := []string{"hello", "cruel", "world"}
+sort.Strings(s)
+```
+
+### Типы
+```go
+type User struct {
+    Name string
+    Age int
+}
+func main() {
+    s := []User{
+        {"vasya", 19},
+        {"petya", 18},
+    }
+    sort.Slice(s, func(i, j int) bool {
+        return s[i].Age < s[j].Age
+    })
+    fmt.Println(s)
+}
+```
+
+### Итерирование
+
+```go
+// Индекс и значение
+for i, v := range s {
+ ...
+}
+```
+
+```go
+// Только индекс
+for i := range s {
+ ...
+}
+```
+
+```go
+// Только значение
+for _, v := range s {
+ ...
+}
+```
+
+### Задачка
+
+Написать функцию `Concat`, которая получает несколько слайсов и склеивает
+их в один длинный. `{{1, 2, 3}, {4,5}, {6, 7}} => {1, 2, 3, 4, 5, 6, 7}`
+
+```go
+func Concat(sls ...[]int) []int {
+	sumLen := 0
+
+	for _, v := range sls {
+		sumLen += len(v)
+	}
+
+	resSlice := make([]int, sumLen)
+
+	currPos := 0
+	for _, v := range sls {
+		copy(resSlice[currPos:], v)
+		currPos += len(v)
+	}
+
+	return resSlice
+}
+```
+
+#### Тест
+
+```go
+package main
+
+import (
+	"reflect"
+	"testing"
+)
+
+// Напишите функцию `Concat`, которая получает несколько слайсов
+// и склеивает их в один длинный.
+// { {1, 2, 3}, {4, 5}, {6, 7} }  => {1, 2, 3, 4, 5, 6, 7}
+
+func Concat(sls [][]int) []int {
+	sumLen := 0
+
+	for _, v := range sls {
+		sumLen += len(v)
+	}
+
+	resSlice := make([]int, sumLen)
+
+	currPos := 0
+	for _, v := range sls {
+		copy(resSlice[currPos:], v)
+		currPos += len(v)
+	}
+
+	return resSlice
+}
+
+func TestConcat(t *testing.T) {
+	test := []struct {
+		slices   [][]int
+		expected []int
+	}{
+		{[][]int{{1, 2}, {3, 4}}, []int{1, 2, 3, 4}},
+		{[][]int{{1, 2}, {3, 4}, {6, 5}}, []int{1, 2, 3, 4, 6, 5}},
+		{[][]int{{1, 2}, {}, {6, 5}}, []int{1, 2, 6, 5}},
+	}
+
+	for _, tc := range test {
+		assertEqual(t, tc.expected, Concat(tc.slices))
+	}
+}
+
+func assertEqual(t *testing.T, expected, actual []int) {
+	if !reflect.DeepEqual(expected, actual) {
+		t.Errorf("Not equal\nExpected: %v\nActual:   %v\n", expected, actual)
+	}
+}
+```
+
+## Словари (map)
+
+- Отображение **ключ** `=>` **значение**.
+- Реализованы как хэш-таблицы.
+- Аналогичные типы в других языках: в Python — `dict`, в JavaScript — `Object`, в Java — `HashMap`, в C++ — `unordered_map`.
+
+### Создание
+
+```go
+var cache map[string]string     // не-инициализированный словарь, nil
+cache := map[string]string{}    // с помощью литерала, len(cache) == 0
+cache := map[string]string{     // литерал с первоначальным значением
+    "one": "один",
+    "two": "два",
+    "three": "три",
+}
+cache := make(map[string]string)        // тоже что и map[string]string{}
+cache := make(map[string]string, 100)   // заранее выделить память
+ // на 100 ключей
+```
+
+### Операции
+
+```go
+value := cache[key]     // получение значения,
+value, ok := cache[key] // получить значение, и флаг того что ключ найден
+_, ok := cache[key]     // проверить наличие ключа в словаре
+cache[key] = value      // записать значение в инициализированный(!) словарь
+delete(cache, key)      // удалить ключ из словаря, работает всегда
+```
+[Подробное описание](https://blog.golang.org/go-maps-in-action)
+
+### Внутреннее устройство
+
+![map](images/map.png)
+
+
+[Про устройство мапы (1)](https://www.ardanlabs.com/blog/2013/12/macro-view-of-map-internals-in-go.html)
+
+[Про устройство мапы (2)](https://dave.cheney.net/2018/05/29/how-the-go-runtime-implements-maps-efficiently-without-generics)
+
+
+### Итерирование
+
+```go
+// Ключ и значение
+for key, val := range cache {
+ ...
+}
+```
+
+```go
+// Только ключ
+for key := range cache {
+ ...
+}
+```
+
+```go
+// Только значение
+for _, val := range cache {
+ ...
+}
+```
+
+###  Cписки ключей и значений
+
+В Go нет функци, возвращающих списки ключеq и значениq словаря.
+
+Получить ключи:
+```go
+var keys []string
+for key, _ := range cache {
+    keys = append(keys, key)
+}
+```
+
+Получить значения:
+
+```go
+values := make([]string, 0, len(cache))
+for _, val := range cache {
+    values = append(values, val)
+}
+```
+
+### Требования к ключам
+
+Ключом может быть любо типа данных, для которого определена операция сравнения `==`:
+- строки, числовые типы, bool каналы (chan);
+- интерфесы;
+- указатели;
+- структуры или массивы содержащие сравнимые типы.
+
+```go
+type User struct {
+    Name string
+    Host string
+}
+var cache map[User][]Permission
+```
+
+[Подробнее](https://golang.org/ref/spec#Comparison_operators)
+
+### Порядок ключей
+
+- Какой порядок итерирования по словарю?
+- Что будет, если удалить ключ во время итерирования?
+- Что будет, если добавить ключ во время итерирования?
+
+[Обязательно](https://goplay.tools/snippet/SmisQCUpCGb)
+
+## Использование Zero Values
+
+Для сласов и словаре, zero value — это nil.
+
+С таким значением будут работать функции и операции читающие данные, например:
+
+```go
+var seq []string            // nil
+var cache map[string]string // nil
+l := len(seq)               // 0
+c := cap(seq)               // 0
+l := len(cache)             // 0
+v, ok := cache[key]         // "", false
+```
+
+Для слайсов будет так же работать `append`
+
+```go
+var seq []string            // nil
+seq = append(seq, "hello")  // []string{"hello"}
+```
+
+Вместо
+
+```go
+hostUsers := make(map[string][]string)
+for _, user := range users {
+    if _, ok := hostUsers[user.Host]; !ok {
+        hostUsers[user.Host] = make([]string)
+    }
+    hostUsers[user.Host] = append(hostUsers[user.Host], user.Name)
+}
+```
+
+
+Корректнее
+
+```go
+hostUsers := make(map[string][]string)
+for _, user := range users {
+    hostUsers[user.Host] = append(hostUsers[user.Host], user.Name)
+}
+```
