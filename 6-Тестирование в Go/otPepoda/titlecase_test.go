@@ -1,12 +1,10 @@
 package main
 
 import (
-	"strconv"
 	"testing"
 
 	"github.com/kulti/titlecase"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 // TitleCase(str, minor) returns a str string with all words capitalized except minor words.
@@ -20,30 +18,10 @@ import (
 // 1. Дописать существующие тесты.
 // 2. Придумать один новый тест.
 
-func TestAtoi(t *testing.T) {
-	const str, want = "43", "42"
-	got, err := strconv.Atoi(str)
-	require.NoError(t, err)
-	assert.Equal(t, want, got)
-
-	// assert.Equal(t, want, got)
-}
-
 func TestEmpty(t *testing.T) {
 	const str, minor, want = "", "", ""
 	got := titlecase.TitleCase(str, minor)
 	assert.Equal(t, want, got)
-	require.Equal(t, want, got)
-	// assert.Equal(t, want, got)
-}
-
-func TestRussian(t *testing.T) {
-	const str, minor, want = "привет медвед", "", "Привет Медвед"
-	got := titlecase.TitleCase(str, minor)
-	if got != want {
-		t.Errorf("got is not want")
-	}
-	// assert.Equal(t, want, got)
 }
 
 func TestWithoutMinor(t *testing.T) {
@@ -52,19 +30,4 @@ func TestWithoutMinor(t *testing.T) {
 
 func TestWithMinorInFirst(t *testing.T) {
 	panic("implement me")
-}
-
-func Test(t *testing.T) {
-	testCases := []struct {
-		desc string
-	}{
-		{
-			desc: "",
-		},
-	}
-	for _, tC := range testCases {
-		t.Run(tC.desc, func(t *testing.T) {
-
-		})
-	}
 }

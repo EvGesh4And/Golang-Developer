@@ -1,4 +1,4 @@
-module simpletest
+module golden
 
 go 1.23.2
 

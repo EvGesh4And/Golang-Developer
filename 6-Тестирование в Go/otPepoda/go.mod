@@ -1,4 +1,4 @@
-module simpletest
+module otPrepoda
 
 go 1.23.2
 
