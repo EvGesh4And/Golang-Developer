@@ -1,0 +1,7 @@
+{
+    "go.testFlags": [
+        "-v", "-count=1"
+    ],
+    "go.testTimeout": "11s",
+    "cSpell.language": "en,ru-RU,ru"
+}
