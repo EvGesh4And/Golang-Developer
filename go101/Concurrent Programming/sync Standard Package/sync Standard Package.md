@@ -346,3 +346,212 @@ func main() {
 	fmt.Println()
 }
 ```
+
+Обратите внимание, что приведённый выше пример предназначен только для объяснения. Он использует вызовы `time.Sleep` для синхронизации конкурентных процессов, что является [плохой практикой для промышленного кода](https://go101.org/article/concurrent-common-mistakes.html#sleep).
+
+Значения `sync.Mutex` и `sync.RWMutex` также могут использоваться для создания уведомлений, хотя существуют и более подходящие способы решения этой задачи. Вот пример, в котором уведомление создаётся с использованием значения `sync.Mutex`.
+
+```go
+package main
+
+import (
+	"fmt"
+	"sync"
+	"time"
+)
+
+func main() {
+	var m sync.Mutex
+	m.Lock()
+	go func() {
+		time.Sleep(time.Second)
+		fmt.Println("Hi")
+		m.Unlock() // make a notification
+	}()
+	m.Lock() // wait to be notified
+	fmt.Println("Bye")
+}
+```
+
+В приведённом выше примере текст `Hi` гарантированно будет выведен перед текстом `Bye`.
+О гарантиях порядка памяти, обеспечиваемых `sync.Mutex` и `sync.RWMutex`, можно прочитать в документации о [гарантиях порядка памяти в Go](https://go101.org/article/memory-model.html#mutex).
+
+## Тип `sync.Cond`
+
+Тип `sync.Cond` предоставляет эффективный способ для организации уведомлений между горутинами.
+
+Каждое значение `sync.Cond` содержит поле `L` типа `sync.Locker`. Чаще всего в качестве `L` используется `*sync.Mutex` или `*sync.RWMutex`.
+
+Тип `*sync.Cond` имеет [три метода](https://pkg.go.dev/sync#Cond):
+- `Wait()`,
+- `Signal()`,
+- `Broadcast()`.
+
+Кроме того, каждое значение `sync.Cond` поддерживает очередь ожидания горутин (FIFO — "первый вошёл, первый вышел").
+
+Для адресуемого значения `sync.Cond` (например, `c`):
+
+- `c.Wait()` должен вызываться только в заблокированном состоянии `c.L`, иначе произойдёт `panic`. Вызов `c.Wait()`:
+
+	1. Добавляет вызывающую горутину в очередь ожидания `c`.
+	2. Вызывает `c.L.Unlock()`, освобождая блокировку `c.L`.
+	3. Переводит горутину в состояние блокировки
+   
+   (она будет разблокирована другой горутиной вызовом `c.Signal()` или `c.Broadcast()` позже)
+   
+   Когда горутина разблокируется, метод `c.L.Lock()` снова установит блокировку `c.L`. Только после успешного захвата блокировки метод `c.Wait()` завершит выполнение.
+
+- `c.Signal()` разблокирует первую горутину в очереди ожидания `c` (и удалит её из очереди), если очередь не пуста.
+
+- `c.Broadcast()` разблокирует все горутины в очереди ожидания `c` (и удалит их из нее), если очередь не пуста.
+
+Методы `c.Wait()`, `c.Signal()` и `c.Broadcast()` являются сокращениями для `(&c).Wait()`, `(&c).Signal()`, `(&c).Broadcast()`.
+
+Методы `c.Signal()` и `c.Broadcast()` обычно используются для уведомления о том, что условие изменилось.
+Как правило, `c.Wait()` вызывается в цикле, который проверяет, выполнено ли условие.
+
+### Идиоматичное использование `sync.Cond`
+Обычно одна горутина ожидает изменения условия, а другие горутины изменяют условие и отправляют уведомления.
+
+Вот пример:
+
+```go
+package main
+
+import (
+	"fmt"
+	"math/rand"
+	"sync"
+	"time"
+)
+
+func main() {
+	const N = 10
+	var values [N]string
+
+	cond := sync.NewCond(&sync.Mutex{})
+
+	for i := 0; i < N; i++ {
+		d := time.Second * time.Duration(rand.Intn(10)) / 10
+		go func(i int) {
+			time.Sleep(d) // simulate a workload
+
+			// Changes must be made when
+			// cond.L is locked.
+			cond.L.Lock()
+			values[i] = string('a' + i)
+
+			// Notify when cond.L lock is locked.
+			cond.Broadcast()
+			cond.L.Unlock()
+
+			// "cond.Broadcast()" can also be put
+			// here, when cond.L lock is unlocked.
+			//cond.Broadcast()
+		}(i)
+	}
+
+	// This function must be called when
+	// cond.L is locked.
+	checkCondition := func() bool {
+		fmt.Println(values)
+		for i := 0; i < N; i++ {
+			if values[i] == "" {
+				return false
+			}
+		}
+		return true
+	}
+
+	cond.L.Lock()
+	defer cond.L.Unlock()
+	for !checkCondition() {
+		// Must be called when cond.L is locked.
+		cond.Wait()
+	}
+}
+```
+
+Один из возможных результатов:
+```go
+[         ]
+[     f    ]
+[  c   f    ]
+[  c   f  h  ]
+[ b c   f  h  ]
+[a b c   f  h  j]
+[a b c   f g h i j]
+[a b c  e f g h i j]
+[a b c d e f g h i j]
+```
+
+Поскольку в данном примере только одна горутина (главная горутина) ожидает разблокировки, вызов `cond.Broadcast()` можно заменить на `cond.Signal()`.
+Как указано в комментариях, `cond.Broadcast()` и `cond.Signal()` не обязательно должны вызываться при заблокированном `cond.L`.
+
+Чтобы избежать состояния **гонки данных (data race)**, каждая из десяти частей пользовательского условия должна изменяться только при заблокированном `cond.L`.
+Кроме того, функция `checkCondition` и метод `cond.Wait` также должны вызываться при заблокированном `cond.L`.
+
+Фактически, в указанном выше примере поле `cond.L` может быть `*sync.RWMutex`, а каждая из десяти частей пользовательского условия может изменяться при удержании `read lock (RLock) cond.L`, как показано в следующем коде:
+
+```go
+...
+	cond := sync.NewCond(&sync.RWMutex{})
+	cond.L.Lock()
+
+	for i := 0; i < N; i++ {
+		d := time.Second * time.Duration(rand.Intn(10)) / 10
+		go func(i int) {
+			time.Sleep(d)
+			cond.L.(*sync.RWMutex).RLock()
+			values[i] = string('a' + i)
+			cond.L.(*sync.RWMutex).RUnlock()
+			cond.Signal()
+		}(i)
+	}
+...
+```
+
+В приведённом выше примере значение `sync.RWMutex` используется нетипично.
+Его read lock (`RLock`) удерживается некоторыми горутинами, которые изменяют элементы массива,
+а его write lock (`Lock`) используется главной горутиной для чтения элементов массива.
+
+Пользовательское условие, контролируемое значением `Cond`, может быть пустым.
+В таких случаях значение `Cond` используется исключительно для уведомлений.
+
+Например, следующая программа выведет `abc` или `bac`.
+
+```go
+package main
+
+import (
+	"fmt"
+	"sync"
+)
+
+func main() {
+	wg := sync.WaitGroup{}
+	wg.Add(1)
+	cond := sync.NewCond(&sync.Mutex{})
+	cond.L.Lock()
+	go func() {
+		cond.L.Lock()
+		go func() {
+			cond.L.Lock()
+			cond.Broadcast()
+			cond.L.Unlock()
+		}()
+		cond.Wait()
+		fmt.Print("a")
+		cond.L.Unlock()
+		wg.Done()
+	}()
+	cond.Wait()
+	fmt.Print("b")
+	cond.L.Unlock()
+	wg.Wait()
+	fmt.Println("c")
+}
+```
+
+Если это необходимо, несколько значений `sync.Cond` могут совместно использовать один и тот же `sync.Locker`. Однако на практике такие случаи встречаются редко.
+
