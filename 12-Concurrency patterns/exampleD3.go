@@ -32,15 +32,9 @@ func main() {
 
 		runtime.LockOSThread()
 		defer runtime.UnlockOSThread()
-		for {
-			select {
-			case <-done:
-				t := time.Since(start)
-				fmt.Println("aaaaaaaa", t.Milliseconds())
-				return
-			default:
-			}
-		}
+		<-done
+		t := time.Since(start)
+		fmt.Println("aaaaaaaa", t.Milliseconds())
 	}()
 
 	time.Sleep(time.Microsecond)
