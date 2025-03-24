@@ -371,3 +371,314 @@ b := make([]byte, 1024*1024)
 err := os.WriteFile(path, b, 0644)
 ```
 
+Скопировать данные из любого `io.Reader`:
+
+```go
+f, _ := os.Create("tmp")
+w, _ := io.Copy(f, os.Stdin) // в f из Stdin, свой цикл внутри и буффер
+fmt.Printf("Written %v bytes", w)
+```
+
+`Copy` остановится на `io.EOF`, 
+- есть ещё `CopyN` — он остановится через `N` байт;
+- а еще `CopyBuffer` - он не создаёт свой буфер, а использует заданный.
+
+операции в пакете `io` применимы к любым `io.Writer`, а не только файлам
+
+## Произвольный доступ (... и работа с файлами)
+
+Устройства/технологии ввода/вывода данных можно условно разделить на 
+
+- поддерживающие <span style="color: green;">**произвольный**</span> доступ
+  - жесткие диски памяти
+-  и поддерживающие <span style="color: blue;">**последовательный**</span> доступ
+   - терминал сетевое соединение pipe
+
+Рассмотренные `io.Reader`, `io.Writer` — для <span style="color: blue;">**последовательного**</span> доступа, а вот `io.ReaderAt`, `io.WriterAt`, `io.Seeker` — для <span style="color: green;">**произвольного**</span> доступа
+
+### `io.Seeker`
+
+```go
+type Seeker interface {
+    Seek(offset int64, whence int) (int64, error)
+}
+```
+
+Позволяет **передвинуть текущую "позицию" в файле вперед или назад с определенной точки `whence` на `offset` байт**.
+Аналог в линуксе — man lseek
+
+Возможные значения `whence`:
+- `io.SeekStart = 0` относительно начала файла;
+- `io.SeekCurrent = 1` относительно текущего положения в файле;
+- `io.SeekEnd = 2` относительно конца файла.
+
+Тип `os.File` реализует интерфейс `io.Seeker`, а вот типа `net.TCPConn` — нет.
+
+```go
+f.Seek(0, io.SeekStart)     // начало файла
+f.Seek(1, io.SeekCurrent)   // пропустить следующий байт
+f.Seek(-1, io.SeekEnd)      // последний байт
+```
+
+### `io.ReaderAt` и `io.WriterAt`
+
+```go
+type ReaderAt interface {
+    ReadAt(p []byte, off int64) (n int, err error)
+}
+
+type WriterAt interface {
+    WriteAt(p []byte, off int64) (n int, err error)
+}
+```
+Позволяют прочитать/записать `len(p)` байт с указанным `off` смещением в файле, т.е. с произвольной позиции
+
+В отличие от `io.Reader`, реализации `io.ReaderAt` всегда читают ровно `len(p)` байт или возвращают ошибку.
+
+## Другие инструменты
+
+### ` io.WriterTo` и `io.ReaderFrom`
+
+```go
+type ReaderFrom interface {
+    ReadFrom(r Reader) (n int64, err error)
+ }
+
+ type WriterTo interface {
+    WriteTo(w Writer) (n int64, err error)
+ }
+ ```
+При копировании с использованием `io.Reader` и `io.Writer` приходится выделять буфер в памяти,  т.е. происходит двойное копирование данных.
+
+Если же источник/получатель данных реализуют интерфейсы `io.WriterTo` / `io.ReaderFrom`, то копирование с помощью `io.Copy` может использовать оптимизацию и **НЕ** выделять промежуточный буфер.
+
+Используются в `io.Copy` автоматически
+
+Например, в linux есть специальный системный вызов `sendfile` для быстрого копирования — и реализация этих интерфейсов позволяет использовать его вместо побайтового переноса данных.
+
+#### Из исходников Go
+
+`ReaderFrom` — это интерфейс, который определяет метод `ReadFrom`.
+
+`ReadFrom` читает данные из `r` до достижения конца файла (EOF) или ошибки.
+Возвращаемое значение `n` — количество прочитанных байтов.
+Любая ошибка (кроме EOF), возникшая во время чтения, также возвращается.
+
+Функция `Copy` использует `ReaderFrom`, если он доступен.
+
+`WriterTo` — это интерфейс, определяющий метод `WriteTo`.
+
+`WriteTo` записывает данные в `w`, пока они не закончатся или не возникнет ошибка.
+Возвращаемое значение `n` — количество записанных байтов.
+Любая ошибка, возникшая во время записи, также возвращается.
+
+Функция `Copy` использует `WriterTo`, если он доступен.
+
+### Комбинированные интерфейсы
+
+```go
+type ReadCloser interface {
+    Reader
+    Closer
+ }
+ func FooRead(src io.ReadCloser){
+    src.Read(...)
+    src.Close()
+ }
+ ```
+
+Eсли в вашем коде требуется объект с несколькими фичами — вы можете использовать комбинированные интерфейсы. 
+Все практичные комбинации уже есть в пакете `io`
+
+### Объединение потоков, chaining
+
+`io.MultiReader` — позволяет последовательно читать из нескольких `reader`-ов.
+ По смыслу аналогично `cat file1 file2 file3`
+
+```go
+func MultiReader(readers ...Reader) Reader
+```
+
+`io.MultiWriter` — позволяет записывать в несколько `writer`-ов.
+Аналогично `tee file1 file2 file3`
+
+`io.LimitReader` — создаёт новый ридер, который прочитает не более `n` байт, далее вернёт `io.EOF`
+
+```go
+func LimitReader(r Reader, n int64) Reader
+```
+## IO в память
+
+`bytes.Buffer` — позволяет читать и писать в память в последовательном стиле
+
+```go
+buf := bytes.NewBuffer(nil)
+buf.Write([]byte{55, 56, 57})
+buf.Read(...)
+contents := buf.String()
+```
+
+`bytes.Reader` — позволяет только чтение, зато произвольный доступ
+
+```go
+reader := bytes.NewReader([]byte("my data"))
+reader.Seek(-1, io.SeekEnd)
+reader.Read(...)
+```
+
+### Из исходников Go
+
+```go
+func (b *Buffer) Write(p []byte) (n int, err error) {
+    ...
+}
+```
+
+`Write` добавляет содержимое `p` в буфер, увеличивая буфер при необходимости.
+Возвращаемое значение `n` равно длине `p`; `err` всегда равен `nil`.
+Если буфер становится слишком большим, `Write` вызывает панику с [ErrTooLarge].
+
+```go
+func (b *Buffer) Read(p []byte) (n int, err error) {
+	...
+}
+```
+
+`Read` читает следующие `len(p)` байтов из буфера или до его опустошения.
+Возвращаемое значение `n` — количество прочитанных байтов.
+Если в буфере нет данных для чтения, возвращается ошибка [`io.EOF`]
+(если только `len(p)` не равен нулю); в остальных случаях ошибка равна `nil`.
+
+### Различия между bytes.NewBuffer и bytes.NewReader
+
+**bytes.NewBuffer (изменяемый)**
+
+```go
+buf := bytes.NewBuffer([]byte{})
+buf.WriteString("добавить данные")
+```
+
+- **Для чтения и записи**
+
+- Автоматически расширяется
+
+- Реализует: `io.Writer`, `io.Reader`
+
+- Использование:
+  - Построчная обработка
+  - Накопление данных
+  - Буферизированный ввод-вывод
+  
+**bytes.NewReader (только чтение)**
+
+```go
+r := bytes.NewReader([]byte{1,2,3})
+r.Read(buf)
+```
+- **Только для чтения**
+- Фиксированный размер
+- Реализует: `io.Reader`, `io.Seeker`, `io.ReaderAt`
+- Использование:
+  - Чтение конфигураций
+  - Тестовые данные
+  - API требующие `io.Reader`
+
+`Buffer` — когда нужно собирать данные, `Reader` — когда работаем с готовыми данными.
+
+**Основные отличия**
+
+|Особенность	| Buffer	| Reader    |
+|---------------|-----------|-----------|
+|Запись|                 ✅|         ❌|
+|Изменение размера|      ✅|         ❌|
+|Произвольный доступ|    ❌|         ✅|
+|Потокобезопасность|     ❌|         ✅|
+
+Пакет `strings` также предлагает `Reader`, более адаптированный для строк
+
+```go
+sr := strings.NewReader()
+```
+
+А `strings.Builder` реализует `io.Writer` и другие интерфейсы.
+
+```go
+b := strings.Builder{}
+```
+
+Если какая то библиотека принимает интерфейсы пакета `io`, а вам надо просто передать туда слайс или строку, используйте эти инструменты
+
+ Пример:
+
+ ```go
+ import "bytes"
+ import "archive/zip"
+ 
+ buf := bytes.NewBuffer([]byte{})
+ zipper := zip.NewWriter(buf)
+ _, err := zipper.Write(data)
+ // в buf находится zip архив!
+```
+
+Как передавать данные через `io`-интерфейсы
+
+1. Для строк (`string`) → `io.Reader`:
+```go
+import "strings"
+
+data := "текстовые данные"
+reader := strings.NewReader(data) // Реализует io.Reader, io.Seeker
+```
+
+2. Для слайсов байт (`[]byte`) → `io.Reader`:
+```go
+import "bytes"
+
+data := []byte{1, 2, 3}
+reader := bytes.NewReader(data) // Реализует io.Reader, io.ReaderAt, io.Seeker
+```
+3. Для записи (`io.Writer`) в буфер:
+```go
+buf := new(bytes.Buffer) // Пустой буфер (реализует io.Writer)
+_, err := buf.Write([]byte("записываем данные"))
+```
+
+**Когда что использовать**:
+
+|  Тип данных  |   Конвертер        |   Реализуемые интерфейсы   |
+|--------------|---------------     |----------------------------|
+|    string    | strings.NewReader  | `io.Reader`, `io.Seeker`   |
+|    []byte    | bytes.Reader       | `io.Reader`, `io.Seeker`, `io.ReaderAt`   |
+|(куда писать)  | `bytes.Buffer`    | `io.Writer`, `io.Reader` (для чтения записанного)|
+
+## Буферизация
+
+С помощью пакета `bufio` можно 
+- сократить число системных вызовов и 
+- улучшить производительность 
+в случае, если требуется читать/записывать данные небольшими кусками, например по строкам. 
+
+Буферизованная запись:
+
+```go
+file, _ := os.Create(path)
+bw := bufio.NewWriter(file)
+written, err := bw.Write([]byte("some bytes"))
+bw.WriteString("some string")
+bw.WriteRune('±')
+bw.WriteByte(42)
+bw.Flush()   
+// очистить буфер, записать все в file
+```
+
+Чтение:
+```go
+file, _ := os.Open(path)
+br := bufio.NewReader(file)
+line, err := br.ReadString(byte('\n'))
+b, err := br.ReadByte()
+br.UnreadByte()  // иногда полезно при анализе строки
+```
+
+
+

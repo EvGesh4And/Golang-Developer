@@ -21,6 +21,9 @@ func main() {
 	f, err = os.OpenFile("data.txt", os.O_RDONLY, 0666)
 	fmt.Println(f, err)
 
+	n, err = io.ReadFull(f, buf)
+	fmt.Println(n, err)
+
 	f, err = os.OpenFile("data.txt", os.O_RDONLY, 0666)
 	fmt.Println(f, err)
 
