@@ -1,16 +1,16 @@
 package main
 
 import (
-	"bytes"
-	"fmt"
+	"bufio"
+	"os"
 )
 
 func main() {
-	buf := bytes.NewBuffer(nil)
-	buf.Write([]byte{'a', 'b', 'c'})
-	b := []byte{1}
-	buf.Read(b)
-	contents := buf.String()
+	f, _ := os.Create("buf.txt")
 
-	fmt.Println(contents)
+	bw := bufio.NewWriter(f)
+
+	bw.Write([]byte("sda"))
+
+	bw.Flush()
 }

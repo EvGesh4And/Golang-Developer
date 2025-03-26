@@ -647,8 +647,8 @@ _, err := buf.Write([]byte("записываем данные"))
 
 |  Тип данных  |   Конвертер        |   Реализуемые интерфейсы   |
 |--------------|---------------     |----------------------------|
-|    string    | strings.NewReader  | `io.Reader`, `io.Seeker`   |
-|    []byte    | bytes.Reader       | `io.Reader`, `io.Seeker`, `io.ReaderAt`   |
+|    string    | `strings.NewReader`  | `io.Reader`, `io.Seeker`   |
+|    [ ]byte    | `bytes.Reader`       | `io.Reader`, `io.Seeker`, `io.ReaderAt`   |
 |(куда писать)  | `bytes.Buffer`    | `io.Writer`, `io.Reader` (для чтения записанного)|
 
 ## Буферизация
@@ -680,5 +680,9 @@ b, err := br.ReadByte()
 br.UnreadByte()  // иногда полезно при анализе строки
 ```
 
+### Из исходников Go
 
+`NewWriter` возвращает новый [`Writer`] с буфером стандартного размера. Если переданный `io.Writer` уже является [Writer] с достаточно большим размером буфера, возвращается исходный [`Writer`].
+
+`NewReader` возвращает новый [`Reader`] с буфером стандартного размера.
 
