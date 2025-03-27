@@ -1,0 +1,4 @@
+{
+    "db": "postgres://user:password@localhost:5432/dbname",
+    "debug": false
+}
