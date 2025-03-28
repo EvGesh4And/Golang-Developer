@@ -17,5 +17,5 @@ func main() {
 	fmt.Printf("%p\n%v\n%#v\n\n", sl, sl, sl)
 	fmt.Printf("%p\n%v\n%#v\n\n", mp, mp, mp)
 	fmt.Printf("%p\n%v\n%#v\n\n", ch, ch, ch)
-	fmt.Printf("%v\n%#v\n\n", st, st)
+	fmt.Printf("%p\n%v\n%#v\n", &st, st, st)
 }
