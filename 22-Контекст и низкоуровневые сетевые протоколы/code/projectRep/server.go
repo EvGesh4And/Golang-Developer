@@ -8,18 +8,16 @@ import (
 )
 
 func handleConnection(conn net.Conn) {
-	fmt.Fprintf(conn, "Welcome to %s, friend from %s\n", conn.LocalAddr(), conn.RemoteAddr())
-
 	scanner := bufio.NewScanner(conn)
-
 	for scanner.Scan() {
 		text := scanner.Text()
-		log.Printf("RECEIVED: %v", text)
+
+		log.Printf("Получил: %s", text)
+
 		if text == "quit" || text == "exit" {
 			break
 		}
-
-		conn.Write([]byte(fmt.Sprintf("I have received %s\n", text)))
+		conn.Write(fmt.Appendf([]byte{}, fmt.Sprintf("Получил: %s\n", text)))
 	}
 
 	if err := scanner.Err(); err != nil {
@@ -31,6 +29,7 @@ func handleConnection(conn net.Conn) {
 
 func main() {
 	l, err := net.Listen("tcp", "0.0.0.0:3302")
+
 	if err != nil {
 		log.Fatalf("Cannot listen: %v", err)
 	}
@@ -44,7 +43,6 @@ func main() {
 		if err != nil {
 			log.Fatalf("Cannot accept: %v", err)
 		}
-
 		go func() {
 			defer conn.Close()
 			handleConnection(conn)
