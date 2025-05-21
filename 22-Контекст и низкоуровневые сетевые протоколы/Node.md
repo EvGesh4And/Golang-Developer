@@ -41,11 +41,11 @@ func WithValue(parent Context, key interface{}, val interface{}) Context
 func AfterFunc(ctx Context, f func()) (stop func() bool)
 ```
 
-![alt text](image.png)
+![alt text](images/image.png)
 
 **WithoutCancel**
 
-![alt text](image-1.png)
+![alt text](images/image-1.png)
 
 ## TCP
 
@@ -57,15 +57,15 @@ func AfterFunc(ctx Context, f func()) (stop func() bool)
 
 ### Диаграмма состояний
 
-![alt text](image-2.png)
+![alt text](images/image-2.png)
 
 ### Установка соединения
 
-![alt text](image-3.png)
+![alt text](images/image-3.png)
 
 ### Завершение соединения
 
-![alt text](image-4.png)
+![alt text](images/image-4.png)
 
 ## UDP
 
