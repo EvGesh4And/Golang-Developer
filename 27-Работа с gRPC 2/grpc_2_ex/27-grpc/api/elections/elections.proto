@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package elections;
+option go_package = "./;pb";
+
+import "google/protobuf/timestamp.proto";
+
+service Elections {
+  rpc SubmitVote (SubmitVoteRequest) returns (SubmitVoteResponse) {}
+}
+
+message SubmitVoteRequest {
+  message Vote {
+    string passport = 1;
+    uint32 candidate_id = 2;
+    string note = 3;
+    google.protobuf.Timestamp time = 4;
+  }
+
+  Vote vote = 1;
+}
+
+message SubmitVoteResponse {
+  repeated int32 ids = 1;
+}

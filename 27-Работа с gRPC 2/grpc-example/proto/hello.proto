@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package hello;
+
+option go_package = "./;proto";
+
+// Сообщение от клиента
+message HelloRequest {
+  string name = 1;
+}
+
+// Ответ сервера
+message HelloReply {
+  string message = 1;
+}
+
+// Описание gRPC-сервиса
+service HelloService {
+  rpc SayHello(HelloRequest) returns (HelloReply);
+}

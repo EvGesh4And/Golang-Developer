@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+
 	"github.com/pressly/goose/v3"
 
 	_ "github.com/jackc/pgx/v4/stdlib"
