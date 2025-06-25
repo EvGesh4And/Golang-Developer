@@ -46,7 +46,7 @@
 
 ### Модульные vs Интеграционные
 
-![alt text](image.png)
+![alt text](images/image.png)
 
 Термины **модульные** и **интеграционные** чаще всего используются в контексте **тестирования программного обеспечения**, хотя могут встречаться и в других сферах. Давайте разберём их значения, отличия и когда они применяются.
 
@@ -131,7 +131,7 @@
 
 **Test-Driven Development (TDD)** — это подход к разработке программного обеспечения, при котором **сначала пишутся тесты**, а **потом пишется код**, удовлетворяющий этим тестам.
 
-![alt text](image-1.png)
+![alt text](images/image-1.png)
 
 ---
 
@@ -249,7 +249,7 @@ go test
 
 ### BDD Behavior-Driven Development
 
-![alt text](image-2.png)
+![alt text](images/image-2.png)
 
 **Behavior-Driven Development (BDD)** — это методология разработки программного обеспечения, ориентированная на поведение системы с точки зрения пользователя. Она расширяет идеи тестирования через поведение (TDD) и делает акцент на сотрудничестве между разработчиками, тестировщиками и бизнес-представителями.
 
@@ -406,7 +406,7 @@ godog
 3. **NotificationService** уведомляет пользователя о регистрации (например смс, email
 и пр.) и публикует событие, что такой-то пользователь был проинформирован.
 
-![alt text](image-3.png)
+![alt text](images/image-3.png)
 
 #### Реализация
 
@@ -432,7 +432,7 @@ https://github.com/cucumber/godog
 
 ## Интеграционные тесты
 
-![alt text](image-4.png)
+![alt text](images/image-4.png)
 
 ### Окружение
 
@@ -478,7 +478,7 @@ https://github.com/kulti/task-list
 
 ### Пирамида тестирования
 
-![alt text](image-5.png)
+![alt text](images/image-5.png)
 
 ### e2e
 
@@ -496,27 +496,27 @@ https://github.com/kulti/task-list
 
 ### e2e для микросервисов
 
-![alt text](image-6.png)
+![alt text](images/image-6.png)
 
 
 - расписание
 - стенды
 
-![alt text](image-7.png)
+![alt text](images/image-7.png)
 
 ### Ограничения от DevOPs
 
 - сложность поддержки
 - много ресурсов
 
-![alt text](image-8.png)
+![alt text](images/image-8.png)
 
 ### Решение
 
 - service-mesh, istio, consul
 - маршрутизация трафика по меткам в http заголовков
 
-![alt text](image-9.png)
+![alt text](images/image-9.png)
 
 ## Итоги занятия
 
