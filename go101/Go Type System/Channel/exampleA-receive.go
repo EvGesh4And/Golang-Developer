@@ -5,13 +5,13 @@ func main() {
 	switch i {
 	case 1:
 		var ch chan int
-		ch <- 0 // вечная блокировка
+		<-ch // вечная блокировка
 	case 2:
 		ch := make(chan int)
 		close(ch)
-		ch <- 0 // panic
+		<-ch // всегда ок
 	case 3:
 		ch := make(chan int)
-		ch <- 0 // nomana
+		<-ch // nomana
 	}
 }
