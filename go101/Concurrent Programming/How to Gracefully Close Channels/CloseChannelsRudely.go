@@ -7,15 +7,14 @@ import (
 func SafeClose(ch chan int) (justClosed bool) {
 	defer func() {
 		if recover() != nil {
-			// The return result can be altered
-			// in a defer function call.
+			// Возврат можно изменить в функции defer.
 			justClosed = false
 		}
 	}()
 
-	// assume ch != nil here.
-	close(ch)   // panic if ch is closed
-	return true // <=> justClosed = true; return
+	// предполагаем, что ch != nil здесь.
+	close(ch)   // вызовет panic, если канал уже закрыт
+	return true // то же самое, что justClosed = true; return
 }
 
 func main() {

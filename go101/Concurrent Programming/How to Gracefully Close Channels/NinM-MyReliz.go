@@ -10,19 +10,14 @@ import (
 func main() {
 
 	var countSend = 10
-
 	var countRec = 5
-
 	var countMess = 100
 
 	stopCh := make(chan struct{})
-
 	dataCh := make(chan int)
-
 	signCh := make(chan struct{}, 1)
 
 	wg := sync.WaitGroup{}
-
 	wg.Add(countRec + countSend)
 
 	// senders

@@ -10,8 +10,8 @@ func main() {
 	log.SetFlags(0)
 
 	// ...
-	const Max = 100000
-	const NumReceivers = 100
+	const Max = 100000       // максимальное значение
+	const NumReceivers = 100 // количество получателей
 
 	wgReceivers := sync.WaitGroup{}
 	wgReceivers.Add(NumReceivers)
@@ -19,12 +19,12 @@ func main() {
 	// ...
 	dataCh := make(chan int)
 
-	// the sender
+	// отправитель
 	go func() {
 		for {
 			if value := rand.Intn(Max); value == 0 {
-				// The only sender can close the
-				// channel at any time safely.
+				// Единственный отправитель может
+				// безопасно закрыть канал в любой момент.
 				close(dataCh)
 				return
 			} else {
@@ -33,14 +33,13 @@ func main() {
 		}
 	}()
 
-	// receivers
+	// получатели
 	for i := 0; i < NumReceivers; i++ {
 		go func() {
 			defer wgReceivers.Done()
 
-			// Receive values until dataCh is
-			// closed and the value buffer queue
-			// of dataCh becomes empty.
+			// Читаем значения, пока канал dataCh не будет
+			// закрыт и его буферная очередь не опустеет.
 			for value := range dataCh {
 				log.Println(value)
 			}

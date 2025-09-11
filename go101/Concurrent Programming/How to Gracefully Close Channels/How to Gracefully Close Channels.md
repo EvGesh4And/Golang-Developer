@@ -52,7 +52,7 @@ func main() {
 
 (Далее этот принцип будем называть **принципом закрытия каналов** - **channel closing principle**)
 
-Разумеется, это не единственный возможный подход. Универсальный принцип: **не закрывать (и не отправлять значения в) закрытые каналы**. Если можно гарантировать, что ни одна горутина больше не будет закрывать и отправлять данные в не закрытый и не nil-канал, тогда канал можно закрыть безопасно. Однако обеспечение таких гарантий со стороны получателя или одного из нескольких отправителей требует больших усилий и усложняет код. Напротив, придерживаться вышеупомянутого принципа закрытия каналов намного проще.
+Разумеется, это не единственный возможный подход. Универсальный принцип: **не закрывать (и не отправлять значения в) закрытые каналы**. Если можно гарантировать, что ни одна горутина больше не будет закрывать и отправлять данные в не закрытый и не nil-канал, тогда канал можно закрыть безопасно. Однако обеспечение таких гарантий со стороны получателя или одного из нескольких отправителей требует больших усилий и усложняет код. Напротив, придерживаться вышеупомянутого принципа закрытия каналов (**channel closing principle**) намного проще.
 
 ## Решения с "грубым" закрытием каналов
 Если вам всё же необходимо закрыть канал на стороне получателя или в одной из нескольких горутин-отправителей, можно использовать [механизм recover](https://go101.org/article/control-flows-more.html#panic-recover), чтобы предотвратить панику при закрытии уже закрытого канала.
@@ -60,18 +60,17 @@ func main() {
 Пример (предположим, что канал передаёт элементы типа `T`):
 
 ```go
-func SafeClose(ch chan T) (justClosed bool) {
+func SafeClose(ch chan int) (justClosed bool) {
 	defer func() {
 		if recover() != nil {
-			// The return result can be altered
-			// in a defer function call.
+			// Возврат можно изменить в функции defer.
 			justClosed = false
 		}
 	}()
 
-	// assume ch != nil here.
-	close(ch)   // panic if ch is closed
-	return true // <=> justClosed = true; return
+	// предполагаем, что ch != nil здесь.
+	close(ch)   // вызовет panic, если канал уже закрыт
+	return true // то же самое, что justClosed = true; return
 }
 ```
 
@@ -87,7 +86,7 @@ func SafeSend(ch chan T, value T) (closed bool) {
 		}
 	}()
 
-	ch <- value  // panic if ch is closed
+	ch <- value  // вызовет panic, если канал уже закрыт
 	return false // <=> closed = false; return
 }
 ```
@@ -160,18 +159,17 @@ func (mc *MyChannel) IsClosed() bool {
 package main
 
 import (
-	"time"
+	"log"
 	"math/rand"
 	"sync"
-	"log"
 )
 
 func main() {
 	log.SetFlags(0)
 
 	// ...
-	const Max = 100000
-	const NumReceivers = 100
+	const Max = 100000       // максимальное значение
+	const NumReceivers = 100 // количество получателей
 
 	wgReceivers := sync.WaitGroup{}
 	wgReceivers.Add(NumReceivers)
@@ -179,12 +177,12 @@ func main() {
 	// ...
 	dataCh := make(chan int)
 
-	// the sender
+	// отправитель
 	go func() {
 		for {
 			if value := rand.Intn(Max); value == 0 {
-				// The only sender can close the
-				// channel at any time safely.
+				// Единственный отправитель может
+				// безопасно закрыть канал в любой момент.
 				close(dataCh)
 				return
 			} else {
@@ -193,14 +191,13 @@ func main() {
 		}
 	}()
 
-	// receivers
+	// получатели
 	for i := 0; i < NumReceivers; i++ {
 		go func() {
 			defer wgReceivers.Done()
 
-			// Receive values until dataCh is
-			// closed and the value buffer queue
-			// of dataCh becomes empty.
+			// Читаем значения, пока канал dataCh не будет
+			// закрыт и его буферная очередь не опустеет.
 			for value := range dataCh {
 				log.Println(value)
 			}
@@ -219,18 +216,17 @@ func main() {
 package main
 
 import (
-	"time"
+	"log"
 	"math/rand"
 	"sync"
-	"log"
 )
 
 func main() {
 	log.SetFlags(0)
 
 	// ...
-	const Max = 100000
-	const NumSenders = 1000
+	const Max = 100000      // максимальное значение
+	const NumSenders = 1000 // количество отправителей
 
 	wgReceivers := sync.WaitGroup{}
 	wgReceivers.Add(1)
@@ -238,34 +234,30 @@ func main() {
 	// ...
 	dataCh := make(chan int)
 	stopCh := make(chan struct{})
-		// stopCh is an additional signal channel.
-		// Its sender is the receiver of channel
-		// dataCh, and its receivers are the
-		// senders of channel dataCh.
+	// stopCh — это дополнительный сигнальный канал.
+	// Его отправитель — это получатель из dataCh,
+	// а его получатели — это все отправители в dataCh.
 
-	// senders
+	// отправители
 	for i := 0; i < NumSenders; i++ {
 		go func() {
 			for {
-				// The try-receive operation is to try
-				// to exit the goroutine as early as
-				// possible. For this specified example,
-				// it is not essential.
+				// Попытка чтения stopCh, чтобы
+				// завершить горутину как можно раньше.
+				// В данном примере это не критично.
 				select {
-				case <- stopCh:
+				case <-stopCh:
 					return
 				default:
 				}
 
-				// Even if stopCh is closed, the first
-				// branch in the second select may be
-				// still not selected for some loops if
-				// the send to dataCh is also unblocked.
-				// But this is acceptable for this
-				// example, so the first select block
-				// above can be omitted.
+				// Даже если stopCh закрыт, вторая select
+				// может иногда выбирать ветку с отправкой
+				// в dataCh, если канал не заблокирован.
+				// Это допустимо в этом примере, так что
+				// первый select можно было бы и убрать.
 				select {
-				case <- stopCh:
+				case <-stopCh:
 					return
 				case dataCh <- rand.Intn(Max):
 				}
@@ -273,15 +265,15 @@ func main() {
 		}()
 	}
 
-	// the receiver
+	// получатель
 	go func() {
 		defer wgReceivers.Done()
 
 		for value := range dataCh {
 			if value == Max-1 {
-				// The receiver of channel dataCh is
-				// also the sender of stopCh. It is
-				// safe to close the stop channel here.
+				// Получатель из dataCh также является
+				// отправителем в stopCh.
+				// Закрыть stopCh здесь безопасно.
 				close(stopCh)
 				return
 			}
@@ -309,11 +301,10 @@ func main() {
 package main
 
 import (
-	"time"
-	"math/rand"
-	"sync"
 	"log"
+	"math/rand"
 	"strconv"
+	"sync"
 )
 
 func main() {
@@ -330,35 +321,34 @@ func main() {
 	// ...
 	dataCh := make(chan int)
 	stopCh := make(chan struct{})
-		// stopCh is an additional signal channel.
-		// Its sender is the moderator goroutine shown
-		// below, and its receivers are all senders
-		// and receivers of dataCh.
+	// stopCh — дополнительный сигнальный канал.
+	// Его отправитель — горутина-«модератор» (ниже),
+	// а получатели — все отправители и получатели dataCh.
+
 	toStop := make(chan string, 1)
-		// The channel toStop is used to notify the
-		// moderator to close the additional signal
-		// channel (stopCh). Its senders are any senders
-		// and receivers of dataCh, and its receiver is
-		// the moderator goroutine shown below.
-		// It must be a buffered channel.
+	// Канал toStop используется для уведомления модератора,
+	// чтобы он закрыл дополнительный сигнальный канал (stopCh).
+	// Отправителями выступают любые отправители и получатели dataCh,
+	// а получателем — горутина-модератор (ниже).
+	// Канал ОБЯЗАТЕЛЬНО должен быть буферизированным.
 
 	var stoppedBy string
 
-	// moderator
+	// Модератор
 	go func() {
 		stoppedBy = <-toStop
 		close(stopCh)
 	}()
 
-	// senders
+	// Отправители
 	for i := 0; i < NumSenders; i++ {
 		go func(id string) {
 			for {
 				value := rand.Intn(Max)
 				if value == 0 {
-					// Here, the try-send operation is
-					// to notify the moderator to close
-					// the additional signal channel.
+					// Здесь неблокирующая отправка — это попытка
+					// уведомить модератора закрыть дополнительный
+					// сигнальный канал.
 					select {
 					case toStop <- "sender#" + id:
 					default:
@@ -366,27 +356,24 @@ func main() {
 					return
 				}
 
-				// The try-receive operation here is to
-				// try to exit the sender goroutine as
-				// early as possible. Try-receive and
-				// try-send select blocks are specially
-				// optimized by the standard Go
-				// compiler, so they are very efficient.
+				// Неблокирующее чтение из stopCh нужно, чтобы
+				// как можно раньше выйти из горутины-отправителя.
+				// Блоки select с try-receive/try-send специально
+				// оптимизированы стандартным компилятором Go,
+				// поэтому очень эффективны.
 				select {
-				case <- stopCh:
+				case <-stopCh:
 					return
 				default:
 				}
 
-				// Even if stopCh is closed, the first
-				// branch in this select block might be
-				// still not selected for some loops
-				// (and for ever in theory) if the send
-				// to dataCh is also non-blocking. If
-				// this is unacceptable, then the above
-				// try-receive operation is essential.
+				// Даже если stopCh уже закрыт, первая ветка в этом
+				// select может не выбираться в некоторых итерациях
+				// (и теоретически бесконечно), если отправка в dataCh
+				// тоже не блокируется. Если это неприемлемо, то
+				// вышеуказанный try-receive обязателен.
 				select {
-				case <- stopCh:
+				case <-stopCh:
 					return
 				case dataCh <- value:
 				}
@@ -394,38 +381,32 @@ func main() {
 		}(strconv.Itoa(i))
 	}
 
-	// receivers
+	// Получатели
 	for i := 0; i < NumReceivers; i++ {
 		go func(id string) {
 			defer wgReceivers.Done()
 
 			for {
-				// Same as the sender goroutine, the
-				// try-receive operation here is to
-				// try to exit the receiver goroutine
-				// as early as possible.
+				// Аналогично отправителю: try-receive нужен,
+				// чтобы как можно раньше выйти из горутины-получателя.
 				select {
-				case <- stopCh:
+				case <-stopCh:
 					return
 				default:
 				}
 
-				// Even if stopCh is closed, the first
-				// branch in this select block might be
-				// still not selected for some loops
-				// (and forever in theory) if the receive
-				// from dataCh is also non-blocking. If
-				// this is not acceptable, then the above
-				// try-receive operation is essential.
+				// Даже если stopCh закрыт, первая ветка может
+				// не выбираться (и теоретически бесконечно), если
+				// чтение из dataCh тоже не блокируется. Если это
+				// неприемлемо, вышеуказанный try-receive обязателен.
 				select {
-				case <- stopCh:
+				case <-stopCh:
 					return
 				case value := <-dataCh:
 					if value == Max-1 {
-						// Here, the same trick is
-						// used to notify the moderator
-						// to close the additional
-						// signal channel.
+						// Тот же приём: уведомляем модератора,
+						// чтобы он закрыл дополнительный
+						// сигнальный канал.
 						select {
 						case toStop <- "receiver#" + id:
 						default:
@@ -483,7 +464,7 @@ import (
 )
 
 func main() {
-	rand.Seed(time.Now().UnixNano()) // needed before Go 1.20
+	rand.Seed(time.Now().UnixNano()) // нужно до Go 1.20
 	log.SetFlags(0)
 
 	// ...
@@ -496,29 +477,28 @@ func main() {
 
 	// ...
 	dataCh := make(chan int)
-	closing := make(chan struct{}) // signal channel
-	closed := make(chan struct{})
+	closing := make(chan struct{}) // сигнальный канал (запрос на остановку)
+	closed := make(chan struct{})  // сигнал «остановка завершена»
 	
-	// The stop function can be called
-	// multiple times safely.
+	// Функцию stop можно безопасно вызывать многократно.
 	stop := func() {
 		select {
-		case closing<-struct{}{}:
+		case closing <- struct{}{}:
 			<-closed
 		case <-closed:
 		}
 	}
 	
-	// some third-party goroutines
+	// Несколько сторонних (третьих) горутин
 	for i := 0; i < NumThirdParties; i++ {
 		go func() {
 			r := 1 + rand.Intn(3)
 			time.Sleep(time.Duration(r) * time.Second)
 			stop()
-		}()
+		}() 
 	}
 
-	// the sender
+	// Отправитель
 	go func() {
 		defer func() {
 			close(closed)
@@ -526,19 +506,21 @@ func main() {
 		}()
 
 		for {
-			select{
-			case <-closing: return
+			select {
+			case <-closing:
+				return
 			default:
 			}
 
-			select{
-			case <-closing: return
+			select {
+			case <-closing:
+				return
 			case dataCh <- rand.Intn(Max):
 			}
 		}
 	}()
 
-	// receivers
+	// Получатели
 	for i := 0; i < NumReceivers; i++ {
 		go func() {
 			defer wgReceivers.Done()
@@ -572,7 +554,7 @@ import (
 )
 
 func main() {
-	rand.Seed(time.Now().UnixNano()) // needed before Go 1.20
+	rand.Seed(time.Now().UnixNano()) // нужно до Go 1.20
 	log.SetFlags(0)
 
 	// ...
@@ -585,15 +567,14 @@ func main() {
 	wgReceivers.Add(NumReceivers)
 
 	// ...
-	dataCh := make(chan int)     // will be closed
-	middleCh := make(chan int)   // will never be closed
-	closing := make(chan string) // signal channel
+	dataCh := make(chan int)     // будет закрыт
+	middleCh := make(chan int)   // никогда не закрывается
+	closing := make(chan string) // сигнальный канал
 	closed := make(chan struct{})
 
 	var stoppedBy string
 
-	// The stop function can be called
-	// multiple times safely.
+	// Функцию stop можно безопасно вызывать многократно.
 	stop := func(by string) {
 		select {
 		case closing <- by:
@@ -602,7 +583,7 @@ func main() {
 		}
 	}
 	
-	// the middle layer
+	// Промежуточный слой
 	go func() {
 		exit := func(v int, needSend bool) {
 			close(closed)
@@ -617,7 +598,7 @@ func main() {
 			case stoppedBy = <-closing:
 				exit(0, false)
 				return
-			case v := <- middleCh:
+			case v := <-middleCh:
 				select {
 				case stoppedBy = <-closing:
 					exit(v, true)
@@ -628,7 +609,7 @@ func main() {
 		}
 	}()
 	
-	// some third-party goroutines
+	// Несколько сторонних горутин
 	for i := 0; i < NumThirdParties; i++ {
 		go func(id string) {
 			r := 1 + rand.Intn(3)
@@ -637,7 +618,7 @@ func main() {
 		}(strconv.Itoa(i))
 	}
 
-	// senders
+	// Отправители
 	for i := 0; i < NumSenders; i++ {
 		go func(id string) {
 			for {
@@ -648,13 +629,13 @@ func main() {
 				}
 
 				select {
-				case <- closed:
+				case <-closed:
 					return
 				default:
 				}
 
 				select {
-				case <- closed:
+				case <-closed:
 					return
 				case middleCh <- value:
 				}
@@ -662,7 +643,7 @@ func main() {
 		}(strconv.Itoa(i))
 	}
 
-	// receivers
+	// Получатели
 	for range [NumReceivers]struct{}{} {
 		go func() {
 			defer wgReceivers.Done()

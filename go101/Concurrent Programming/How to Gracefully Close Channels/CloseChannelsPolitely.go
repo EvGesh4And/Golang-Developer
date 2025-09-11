@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"sync"
 )
 
@@ -20,26 +19,8 @@ func (mc *MyChannel) SafeClose() {
 	})
 }
 
-func SafeClose(ch chan int) (justClosed bool) {
-	defer func() {
-		if recover() != nil {
-			// The return result can be altered
-			// in a defer function call.
-			justClosed = false
-		}
-	}()
-
-	// assume ch != nil here.
-	close(ch)   // panic if ch is closed
-	return true // <=> justClosed = true; return
-}
-
 func main() {
 	mych := NewMyChannel()
-
 	mych.SafeClose()
-
 	mych.SafeClose()
-
-	fmt.Println(SafeClose(mych.c))
 }
