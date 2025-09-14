@@ -7,6 +7,12 @@ import (
 func MergeSorted(ctx context.Context, ins ...<-chan int) <-chan int {
 	out := make(chan int)
 
+	// edge-case: нет входов
+	if len(ins) == 0 {
+		close(out)
+		return out
+	}
+
 	go func() {
 		defer close(out)
 
@@ -16,14 +22,18 @@ func MergeSorted(ctx context.Context, ins ...<-chan int) <-chan int {
 		}
 		heads := make([]item, len(ins))
 
-		// начальное чтение
+		// начальное чтение «голов»
 		for i, ch := range ins {
-			v, ok := <-ch
-			heads[i] = item{v, ok}
+			select {
+			case <-ctx.Done():
+				return
+			case v, ok := <-ch:
+				heads[i] = item{v, ok}
+			}
 		}
 
 		for {
-			// выбираем минимальный из heads
+			// найти минимальную «голову»
 			minIdx := -1
 			for i, it := range heads {
 				if !it.ok {
@@ -33,19 +43,24 @@ func MergeSorted(ctx context.Context, ins ...<-chan int) <-chan int {
 					minIdx = i
 				}
 			}
-			if minIdx == -1 { // все каналы пусты
-				return
+			if minIdx == -1 {
+				return // все входы пусты
 			}
 
+			// отдать минимальный
 			select {
 			case <-ctx.Done():
 				return
 			case out <- heads[minIdx].val:
 			}
 
-			// читаем следующий из выбранного канала
-			v, ok := <-ins[minIdx]
-			heads[minIdx] = item{v, ok}
+			// дочитать следующую «голову» из того же входа
+			select {
+			case <-ctx.Done():
+				return
+			case v, ok := <-ins[minIdx]:
+				heads[minIdx] = item{v, ok}
+			}
 		}
 	}()
 
